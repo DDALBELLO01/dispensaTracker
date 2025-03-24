@@ -1,51 +1,110 @@
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Dispensa</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #121212; color: #ffffff; }
+        h1, h2 { text-align: center; color: #ffffff; }
+        .container { max-width: 800px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #2a2a2a; }
+        th, td { border: 1px solid #444; padding: 10px; text-align: left; color: #ffffff; }
+        th { background-color: #4CAF50; color: white; }
+        .input-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        input, button { padding: 10px; border: 1px solid #444; border-radius: 5px; background: #2a2a2a; color: white; }
+        button { background-color: #4CAF50; color: white; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+        img { width: 50px; height: 50px; border-radius: 5px; }
+        .menu-item { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gestione Dispensa</h1>
+        <div>
+            <h2>Aggiungi Prodotto</h2>
+            <div class="input-group">
+                <input type="text" id="name" placeholder="Nome">
+                <input type="text" id="description" placeholder="Descrizione">
+                <input type="number" id="quantity" placeholder="Quantità">
+                <input type="number" id="number" placeholder="Numero">
+                <input type="text" id="image" placeholder="URL Immagine">
+                <button onclick="addItem()">Aggiungi</button>
+            </div>
+        </div>
 
-const supabaseUrl = "TUA_SUPABASE_URL";
-const supabaseKey = "TUA_SUPABASE_ANON_KEY";
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        <h2>Prodotti</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Descrizione</th>
+                    <th>Quantità</th>
+                    <th>Numero</th>
+                    <th>Immagine</th>
+                </tr>
+            </thead>
+            <tbody id="itemsTable"></tbody>
+        </table>
 
-async function addItem() {
-    const name = document.getElementById("name").value;
-    const description = document.getElementById("description").value;
-    const quantity = document.getElementById("quantity").value;
-    const number = document.getElementById("number").value;
-    const image = document.getElementById("image").value;
+        <h2>Menù Settimanale</h2>
+        <div id="menu"></div>
+    </div>
 
-    if (name && quantity && number) {
-        const { data, error } = await supabase
-            .from("dispensa")
-            .insert([{ name, description, quantity, number, image }]);
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script>
+        const supabaseUrl = "https://fciqgkxmnucfeyptzvrp.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjaXFna3htbnVjZmV5cHR6dnJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MjE3MTgsImV4cCI6MjA1ODM5NzcxOH0.Cueo81pbZJxvGrXJ0WQqYAVHWfOnxADR_OK4dMTBUtk";
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        if (error) {
-            console.error("Errore nell'inserimento:", error);
-        } else {
-            console.log("Dati salvati:", data);
-            loadItems();
+        // Fetch and display the items from the database on load
+        async function loadItems() {
+            const { data, error } = await supabase.from("dispensa").select("*");
+
+            if (error) {
+                console.error("Errore nel caricamento dei dati:", error);
+                return;
+            }
+
+            const table = document.getElementById("itemsTable");
+            table.innerHTML = "";
+
+            data.forEach(item => {
+                const row = `<tr>
+                    <td>${item.name}</td>
+                    <td>${item.description}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.number}</td>
+                    <td><img src="${item.image}" alt="${item.name}"></td>
+                </tr>`;
+                table.innerHTML += row;
+            });
         }
-    }
-}
 
-async function loadItems() {
-    const { data, error } = await supabase.from("dispensa").select("*");
+        // Add a new item to the database and refresh the table
+        async function addItem() {
+            const name = document.getElementById("name").value;
+            const description = document.getElementById("description").value;
+            const quantity = document.getElementById("quantity").value;
+            const number = document.getElementById("number").value;
+            const image = document.getElementById("image").value;
 
-    if (error) {
-        console.error("Errore nel caricamento dei dati:", error);
-        return;
-    }
+            if (name && quantity && number) {
+                const { data, error } = await supabase
+                    .from("dispensa")
+                    .insert([{ name, description, quantity, number, image }]);
 
-    const table = document.getElementById("itemsTable");
-    table.innerHTML = "";
+                if (error) {
+                    console.error("Errore nell'inserimento:", error);
+                } else {
+                    console.log("Dati salvati:", data);
+                    loadItems(); // Reload the items after adding
+                }
+            }
+        }
 
-    data.forEach(item => {
-        const row = `<tr>
-            <td>${item.name}</td>
-            <td>${item.description}</td>
-            <td>${item.quantity}</td>
-            <td>${item.number}</td>
-            <td><img src="${item.image}" alt="${item.name}"></td>
-        </tr>`;
-        table.innerHTML += row;
-    });
-}
-
-loadItems();
+        loadItems(); // Initial load of items when the page is loaded
+    </script>
+</body>
+</html>
