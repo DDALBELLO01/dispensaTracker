@@ -3,184 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Dispensa</title>
+    <title>Gestione Dispensa e Menu Settimanale</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #121212; color: #ffffff; }
-        h1, h2 { text-align: center; color: #ffffff; }
-        .container { max-width: 800px; margin: auto; background: #1e1e1e; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #2a2a2a; }
-        th, td { border: 1px solid #444; padding: 10px; text-align: left; color: #ffffff; }
-        th { background-color: #4CAF50; color: white; }
-        .input-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-        input, button { padding: 10px; border: 1px solid #444; border-radius: 5px; background: #2a2a2a; color: white; }
-        button { background-color: #4CAF50; color: white; cursor: pointer; }
-        button:hover { background-color: #45a049; }
-        img { width: 50px; height: 50px; border-radius: 5px; }
-        .menu-item { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #000000;
+            color: #ffffff;
+        }
+        h1 {
+            text-align: center;
+            color: #ffffff;
+        }
+        .container {
+            display: block;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+        .form-section, .menu-section {
+            background-color: #1c1c1c;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .form-section input, .form-section select, .form-section button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #444444;
+            background-color: #333333;
+            color: #ffffff;
+        }
+        .form-section input::placeholder {
+            color: #999999;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table, th, td {
+            border: 1px solid #444444;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+        .menu-section table {
+            margin-top: 20px;
+        }
+        .menu-section select {
+            width: 100px;
+            background-color: #333333;
+            color: #ffffff;
+            border: 1px solid #444444;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #27ae60;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2ecc71;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Gestione Dispensa</h1>
 
-        <!-- Aggiungi il modulo di login/logout -->
-        <div id="auth-section">
-            <button onclick="signUp()">Registrati</button>
-            <button onclick="logIn()">Accedi</button>
-            <button onclick="logOut()" style="display:none;" id="logout-btn">Logout</button>
-        </div>
+<h1>Gestione Dispensa e Menu Settimanale</h1>
 
-        <div id="app-section" style="display:none;">
-            <div>
-                <h2>Aggiungi Prodotto</h2>
-                <div class="input-group">
-                    <input type="text" id="name" placeholder="Nome">
-                    <input type="text" id="description" placeholder="Descrizione">
-                    <input type="number" id="quantity" placeholder="Quantità">
-                    <input type="number" id="number" placeholder="Numero">
-                    <input type="text" id="image" placeholder="URL Immagine">
-                    <button onclick="addItem()">Aggiungi</button>
-                </div>
-            </div>
-
-            <h2>Prodotti</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Descrizione</th>
-                        <th>Quantità</th>
-                        <th>Numero</th>
-                        <th>Immagine</th>
-                    </tr>
-                </thead>
-                <tbody id="itemsTable"></tbody>
-            </table>
-
-            <h2>Menù Settimanale</h2>
-            <div id="menu"></div>
-            <button onclick="saveMenu()">Salva Menù</button>
-        </div>
+<div class="container">
+    <!-- Sezione Dispensa -->
+    <div class="form-section">
+        <h2>Inserisci Articoli in Dispensa</h2>
+        <input type="text" id="nomeArticolo" placeholder="Nome Articolo" required>
+        <input type="text" id="descrizioneArticolo" placeholder="Descrizione">
+        <input type="number" id="quantitaArticolo" placeholder="Quantità" required>
+        <input type="text" id="unitaArticolo" placeholder="Unità di Misura" required>
+        <input type="number" id="numeroArticolo" placeholder="Numero" required>
+        <button onclick="aggiungiArticolo()">Aggiungi Articolo</button>
+        
+        <h3>Articoli in Dispensa</h3>
+        <table id="tabellaDispensa">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Descrizione</th>
+                    <th>Quantità</th>
+                    <th>Unità</th>
+                    <th>Numero</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Gli articoli verranno aggiunti qui -->
+            </tbody>
+        </table>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-    <script>
-        const supabaseUrl = "https://fciqgkxmnucfeyptzvrp.supabase.co";
-        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZjaXFna3htbnVjZmV5cHR6dnJwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MjE3MTgsImV4cCI6MjA1ODM5NzcxOH0.Cueo81pbZJxvGrXJ0WQqYAVHWfOnxADR_OK4dMTBUtk";
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-        
-        let menu = Array(7).fill("");  // Array per il menù settimanale
-        let user = null;
+    <!-- Sezione Menu Settimanale -->
+    <div class="menu-section">
+        <h2>Menu Settimanale</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Giorno</th>
+                    <th>Pranzo</th>
+                    <th>Cena</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Giorni della settimana -->
+                <tr>
+                    <td>Lunedì</td>
+                    <td><select class="ingrediente" data-giorno="Lunedì" data-pasto="Pranzo"></select></td>
+                    <td><select class="ingrediente" data-giorno="Lunedì" data-pasto="Cena"></select></td>
+                </tr>
+                <tr>
+                    <td>Martedì</td>
+                    <td><select class="ingrediente" data-giorno="Martedì" data-pasto="Pranzo"></select></td>
+                    <td><select class="ingrediente" data-giorno="Martedì" data-pasto="Cena"></select></td>
+                </tr>
+                <tr>
+                    <td>Mercoledì</td>
+                    <td><select class="ingrediente" data-giorno="Mercoledì" data-pasto="Pranzo"></select></td>
+                    <td><select class="ingrediente" data-giorno="Mercoledì" data-pasto="Cena"></select></td>
+                </tr>
+                <tr>
+                    <td>Giovedì</td>
+                    <td><select class="ingrediente" data-giorno="Giovedì" data-pasto="Pranzo"></select></td>
+                    <td><select class="ingrediente" data-giorno="Giovedì" data-pasto="Cena"></select></td>
+                </tr>
+                <tr>
+                    <td>Venerdì</td>
+                    <td><select class="ingrediente" data-giorno="Venerdì" data-pasto="Pranzo"></select></td>
+                    <td><select class="ingrediente" data-giorno="Venerdì" data-pasto="Cena"></select></td>
+                </tr>
+                <tr>
+                    <td>Sabato</td>
+                    <td><select class="ingrediente" data-giorno="Sabato" data-pasto="Pranzo"></select></td>
+                    <td><select class="ingrediente" data-giorno="Sabato" data-pasto="Cena"></select></td>
+                </tr>
+                <tr>
+                    <td>Domenica</td>
+                    <td><select class="ingrediente" data-giorno="Domenica" data-pasto="Pranzo"></select></td>
+                    <td><select class="ingrediente" data-giorno="Domenica" data-pasto="Cena"></select></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 
-        // Funzione per gestire la registrazione
-        async function signUp() {
-            const { user, error } = await supabase.auth.signUp({
-                email: "test@example.com",
-                password: "password123",
-            });
-            if (error) {
-                console.error("Errore nella registrazione:", error);
-            } else {
-                console.log("Utente registrato:", user);
-                this.user = user;
-                showApp();
-            }
-        }
+<script>
+// Funzione per aggiungere articoli alla dispensa
+let dispensa = [];
 
-        // Funzione per gestire il login
-        async function logIn() {
-            const { user, error } = await supabase.auth.signIn({
-                email: "test@example.com",
-                password: "password123",
-            });
-            if (error) {
-                console.error("Errore nel login:", error);
-            } else {
-                console.log("Utente loggato:", user);
-                this.user = user;
-                showApp();
-            }
-        }
+function aggiungiArticolo() {
+    const nome = document.getElementById('nomeArticolo').value;
+    const descrizione = document.getElementById('descrizioneArticolo').value;
+    const quantita = document.getElementById('quantitaArticolo').value;
+    const unita = document.getElementById('unitaArticolo').value;
+    const numero = document.getElementById('numeroArticolo').value;
 
-        // Funzione per gestire il logout
-        async function logOut() {
-            await supabase.auth.signOut();
-            this.user = null;
-            document.getElementById("app-section").style.display = "none";
-            document.getElementById("auth-section").style.display = "block";
-        }
+    if (nome && quantita && unita && numero) {
+        const articolo = { nome, descrizione, quantita, unita, numero };
+        dispensa.push(articolo);
+        aggiornaDispensa();
+        // Svuota i campi dopo l'inserimento
+        document.getElementById('nomeArticolo').value = '';
+        document.getElementById('descrizioneArticolo').value = '';
+        document.getElementById('quantitaArticolo').value = '';
+        document.getElementById('unitaArticolo').value = '';
+        document.getElementById('numeroArticolo').value = '';
+    } else {
+        alert("Nome, Quantità, Unità e Numero sono obbligatori.");
+    }
+}
 
-        // Mostra la sezione dell'app dopo il login
-        function showApp() {
-            document.getElementById("auth-section").style.display = "none";
-            document.getElementById("app-section").style.display = "block";
-            loadItems();
-            renderMenu();
-        }
+// Funzione per aggiornare la tabella della dispensa
+function aggiornaDispensa() {
+    const tabellaDispensa = document.getElementById('tabellaDispensa').getElementsByTagName('tbody')[0];
+    tabellaDispensa.innerHTML = ''; // Pulisce la tabella prima di ricaricarla
 
-        // Carica i prodotti della dispensa
-        async function loadItems() {
-            const { data, error } = await supabase.from("dispensa").select("*");
+    dispensa.forEach(articolo => {
+        const row = tabellaDispensa.insertRow();
+        row.innerHTML = `
+            <td>${articolo.nome}</td>
+            <td>${articolo.descrizione || '-'}</td>
+            <td>${articolo.quantita}</td>
+            <td>${articolo.unita}</td>
+            <td>${articolo.numero}</td>
+        `;
+    });
 
-            if (error) {
-                console.error("Errore nel caricamento dei dati:", error);
-                return;
-            }
+    aggiornaMenu();  // Aggiorna il menu solo quando ci sono articoli nella dispensa
+}
 
-            const table = document.getElementById("itemsTable");
-            table.innerHTML = "";
+// Funzione per aggiornare i menu settimanali con gli ingredienti disponibili
+function aggiornaMenu() {
+    const selectElements = document.querySelectorAll('.ingrediente');
+    selectElements.forEach(select => {
+        select.innerHTML = ''; // Pulisce le opzioni
+        dispensa.forEach(articolo => {
+            const option = document.createElement('option');
+            option.value = articolo.nome;
+            option.textContent = `${articolo.nome} (${articolo.unita})`;
+            select.appendChild(option);
+        });
+    });
+}
 
-            data.forEach(item => {
-                const row = `<tr>
-                    <td>${item.name}</td>
-                    <td>${item.description}</td>
-                    <td>${item.quantity}</td>
-                    <td>${item.number}</td>
-                    <td><img src="${item.image}" alt="${item.name}"></td>
-                </tr>`;
-                table.innerHTML += row;
-            });
-        }
+</script>
 
-        // Funzione per salvare il menù settimanale
-        async function saveMenu() {
-            if (!user) return;
-
-            const { data, error } = await supabase.from("weekly_menu").upsert([{
-                user_id: user.id,
-                day_1: menu[0],
-                day_2: menu[1],
-                day_3: menu[2],
-                day_4: menu[3],
-                day_5: menu[4],
-                day_6: menu[5],
-                day_7: menu[6],
-            }]);
-
-            if (error) {
-                console.error("Errore nel salvataggio del menù:", error);
-            } else {
-                console.log("Menù settimanale salvato:", data);
-            }
-        }
-
-        // Funzione per aggiornare il menù settimanale
-        function renderMenu() {
-            const menuDiv = document.getElementById("menu");
-            menuDiv.innerHTML = ""; // Pulisce il contenitore del menù
-
-            menu.forEach((meal, index) => {
-                menuDiv.innerHTML += `<div class="menu-item">
-                    <span>Giorno ${index + 1}:</span>
-                    <input type="text" value="${meal}" oninput="updateMenu(${index}, this.value)">
-                </div>`;
-            });
-        }
-
-        // Funzione per aggiornare l'array del menù
-        function updateMenu(day, value) {
-            menu[day] = value;
-        }
-    </script>
 </body>
 </html>
