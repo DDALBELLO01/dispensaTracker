@@ -3,223 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Dispensa e Menu Settimanale</title>
+    <title>Gestione Ricette e Dispensa</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #000000;
-            color: #ffffff;
-        }
-        h1 {
-            text-align: center;
-            color: #ffffff;
-        }
-        .container {
-            display: block;
-            margin: 0 auto;
-            max-width: 1200px;
-        }
-        .form-section, .menu-section {
-            background-color: #1c1c1c;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .form-section input, .form-section select, .form-section button {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            margin-top: 5px;
-            border-radius: 5px;
-            border: 1px solid #444444;
-            background-color: #333333;
-            color: #ffffff;
-        }
-        .form-section input::placeholder {
-            color: #999999;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        table, th, td {
-            border: 1px solid #444444;
-        }
-        th, td {
-            padding: 8px;
-            text-align: center;
-        }
-        .menu-section table {
-            margin-top: 20px;
-        }
-        .menu-section select {
-            width: 100px;
-            background-color: #333333;
-            color: #ffffff;
-            border: 1px solid #444444;
-            padding: 5px;
-            border-radius: 5px;
-        }
-        button {
-            background-color: #27ae60;
-            color: #ffffff;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #2ecc71;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #000; color: #fff; }
+        .container { max-width: 1200px; margin: auto; }
+        .section { background: #1c1c1c; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        input, select, button { width: 100%; padding: 10px; margin: 5px 0; border-radius: 5px; background: #333; color: #fff; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 8px; text-align: center; border: 1px solid #444; }
+        button { background: #27ae60; cursor: pointer; }
+        button:hover { background: #2ecc71; }
+        .success, .error { margin-top: 10px; padding: 10px; color: white; border-radius: 5px; }
+        .success { background-color: #2ecc71; }
+        .error { background-color: #e74c3c; }
     </style>
 </head>
 <body>
 
-<h1>Gestione Dispensa e Menu Settimanale</h1>
-
 <div class="container">
-    <!-- Sezione Dispensa -->
-    <div class="form-section">
-        <h2>Inserisci Articoli in Dispensa</h2>
-        <input type="text" id="nomeArticolo" placeholder="Nome Articolo" required>
-        <input type="text" id="descrizioneArticolo" placeholder="Descrizione">
-        <input type="number" id="quantitaArticolo" placeholder="Quantità" required>
-        <input type="text" id="unitaArticolo" placeholder="Unità di Misura" required>
-        <input type="number" id="numeroArticolo" placeholder="Numero" required>
-        <button onclick="aggiungiArticolo()">Aggiungi Articolo</button>
+    <h1>Gestione Ricette e Dispensa</h1>
+    
+    <div class="section">
+        <h2>Dispensa</h2>
+        <input type="text" id="nomeIngrediente" placeholder="Nome Ingrediente" required>
+        <input type="number" id="quantitaIngrediente" placeholder="Quantità" required>
+        <select id="unitaIngrediente" required>
+            <option value="pz">pz</option>
+            <option value="kg">kg</option>
+            <option value="gr">gr</option>
+            <option value="l">l</option>
+            <option value="ml">ml</option>
+        </select>
+        <button onclick="aggiungiIngrediente()">Aggiungi Ingrediente</button>
         
-        <h3>Articoli in Dispensa</h3>
+        <h3>Ingredienti Disponibili</h3>
         <table id="tabellaDispensa">
             <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Descrizione</th>
-                    <th>Quantità</th>
-                    <th>Unità</th>
-                    <th>Numero</th>
-                </tr>
+                <tr><th>Nome</th><th>Quantità</th><th>Unità</th></tr>
             </thead>
-            <tbody>
-                <!-- Gli articoli verranno aggiunti qui -->
-            </tbody>
+            <tbody></tbody>
         </table>
     </div>
+    
 
-    <!-- Sezione Menu Settimanale -->
-    <div class="menu-section">
+    <div class="section">
+        <h2>Gestione Ricette</h2>
+        <input type="text" id="nomeRicetta" placeholder="Nome Ricetta" required>
+        <button onclick="aggiungiRicetta()">Aggiungi Ricetta</button>
+        
+        <h3>Ricette</h3>
+        <table id="tabellaRicette"><thead><tr><th>Nome</th><th>Ingredienti</th></tr></thead><tbody></tbody></table>
+        <div id="ricetteFeedback" class="success" style="display: none;"></div>
+    </div>
+
+    <div class="section">
         <h2>Menu Settimanale</h2>
         <table>
             <thead>
-                <tr>
-                    <th>Giorno</th>
-                    <th>Pranzo</th>
-                    <th>Cena</th>
-                </tr>
+                <tr><th>Giorno</th><th>Pranzo</th><th>Cena</th></tr>
             </thead>
             <tbody>
-                <!-- Giorni della settimana -->
-                <tr>
-                    <td>Lunedì</td>
-                    <td><select class="ingrediente" data-giorno="Lunedì" data-pasto="Pranzo"></select></td>
-                    <td><select class="ingrediente" data-giorno="Lunedì" data-pasto="Cena"></select></td>
-                </tr>
-                <tr>
-                    <td>Martedì</td>
-                    <td><select class="ingrediente" data-giorno="Martedì" data-pasto="Pranzo"></select></td>
-                    <td><select class="ingrediente" data-giorno="Martedì" data-pasto="Cena"></select></td>
-                </tr>
-                <tr>
-                    <td>Mercoledì</td>
-                    <td><select class="ingrediente" data-giorno="Mercoledì" data-pasto="Pranzo"></select></td>
-                    <td><select class="ingrediente" data-giorno="Mercoledì" data-pasto="Cena"></select></td>
-                </tr>
-                <tr>
-                    <td>Giovedì</td>
-                    <td><select class="ingrediente" data-giorno="Giovedì" data-pasto="Pranzo"></select></td>
-                    <td><select class="ingrediente" data-giorno="Giovedì" data-pasto="Cena"></select></td>
-                </tr>
-                <tr>
-                    <td>Venerdì</td>
-                    <td><select class="ingrediente" data-giorno="Venerdì" data-pasto="Pranzo"></select></td>
-                    <td><select class="ingrediente" data-giorno="Venerdì" data-pasto="Cena"></select></td>
-                </tr>
-                <tr>
-                    <td>Sabato</td>
-                    <td><select class="ingrediente" data-giorno="Sabato" data-pasto="Pranzo"></select></td>
-                    <td><select class="ingrediente" data-giorno="Sabato" data-pasto="Cena"></select></td>
-                </tr>
-                <tr>
-                    <td>Domenica</td>
-                    <td><select class="ingrediente" data-giorno="Domenica" data-pasto="Pranzo"></select></td>
-                    <td><select class="ingrediente" data-giorno="Domenica" data-pasto="Cena"></select></td>
-                </tr>
+                <tr><td>Lunedì</td><td><select class="menu" data-giorno="Lunedì" data-pasto="Pranzo"></select></td><td><select class="menu" data-giorno="Lunedì" data-pasto="Cena"></select></td></tr>
+                <tr><td>Martedì</td><td><select class="menu" data-giorno="Martedì" data-pasto="Pranzo"></select></td><td><select class="menu" data-giorno="Martedì" data-pasto="Cena"></select></td></tr>
+                <tr><td>Mercoledì</td><td><select class="menu" data-giorno="Mercoledì" data-pasto="Pranzo"></select></td><td><select class="menu" data-giorno="Mercoledì" data-pasto="Cena"></select></td></tr>
+                <tr><td>Giovedì</td><td><select class="menu" data-giorno="Giovedì" data-pasto="Pranzo"></select></td><td><select class="menu" data-giorno="Giovedì" data-pasto="Cena"></select></td></tr>
+                <tr><td>Venerdì</td><td><select class="menu" data-giorno="Venerdì" data-pasto="Pranzo"></select></td><td><select class="menu" data-giorno="Venerdì" data-pasto="Cena"></select></td></tr>
+                <tr><td>Sabato</td><td><select class="menu" data-giorno="Sabato" data-pasto="Pranzo"></select></td><td><select class="menu" data-giorno="Sabato" data-pasto="Cena"></select></td></tr>
+                <tr><td>Domenica</td><td><select class="menu" data-giorno="Domenica" data-pasto="Pranzo"></select></td><td><select class="menu" data-giorno="Domenica" data-pasto="Cena"></select></td></tr>
             </tbody>
         </table>
-    </div>
+    </div>                
+</tbody>
 </div>
 
-<script>
-// Funzione per aggiungere articoli alla dispensa
-let dispensa = [];
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/11.5.0/firebase-firestore.js";
 
-function aggiungiArticolo() {
-    const nome = document.getElementById('nomeArticolo').value;
-    const descrizione = document.getElementById('descrizioneArticolo').value;
-    const quantita = document.getElementById('quantitaArticolo').value;
-    const unita = document.getElementById('unitaArticolo').value;
-    const numero = document.getElementById('numeroArticolo').value;
+    const firebaseConfig = {
+      apiKey: "AIzaSyA1oJZ4hFBSyHZ4QGemY8yKMsVZVQGusPY",
+      authDomain: "dispensa-95a92.firebaseapp.com",
+      databaseURL: "https://dispensa-95a92-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "dispensa-95a92",
+      storageBucket: "dispensa-95a92.firebasestorage.app",
+      messagingSenderId: "852215052571",
+      appId: "1:852215052571:web:44631d0c612d7e28ee7bbe",
+      measurementId: "G-FS69HPBK0N"
+    };
 
-    if (nome && quantita && unita && numero) {
-        const articolo = { nome, descrizione, quantita, unita, numero };
-        dispensa.push(articolo);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let dispensa = [];
+    let ricette = [];
+
+    async function caricaDispensa() {
+        const querySnapshot = await getDocs(collection(db, "dispensa"));
+        dispensa = querySnapshot.docs.map(doc => doc.data());
         aggiornaDispensa();
-        // Svuota i campi dopo l'inserimento
-        document.getElementById('nomeArticolo').value = '';
-        document.getElementById('descrizioneArticolo').value = '';
-        document.getElementById('quantitaArticolo').value = '';
-        document.getElementById('unitaArticolo').value = '';
-        document.getElementById('numeroArticolo').value = '';
-    } else {
-        alert("Nome, Quantità, Unità e Numero sono obbligatori.");
     }
-}
 
-// Funzione per aggiornare la tabella della dispensa
-function aggiornaDispensa() {
-    const tabellaDispensa = document.getElementById('tabellaDispensa').getElementsByTagName('tbody')[0];
-    tabellaDispensa.innerHTML = ''; // Pulisce la tabella prima di ricaricarla
+    async function caricaRicette() {
+        const querySnapshot = await getDocs(collection(db, "ricette"));
+        ricette = querySnapshot.docs.map(doc => doc.data());
+        aggiornaMenu();
+    }
 
-    dispensa.forEach(articolo => {
-        const row = tabellaDispensa.insertRow();
-        row.innerHTML = `
-            <td>${articolo.nome}</td>
-            <td>${articolo.descrizione || '-'}</td>
-            <td>${articolo.quantita}</td>
-            <td>${articolo.unita}</td>
-            <td>${articolo.numero}</td>
-        `;
-    });
+    async function aggiungiIngrediente() {
+        const nome = document.getElementById('nomeIngrediente').value;
+        const quantita = parseFloat(document.getElementById('quantitaIngrediente').value);
+        const unita = document.getElementById('unitaIngrediente').value;
 
-    aggiornaMenu();  // Aggiorna il menu solo quando ci sono articoli nella dispensa
-}
+        if (nome && quantita && unita) {
+            await addDoc(collection(db, 'dispensa'), {
+                nome, quantita, unita
+            });
+            caricaDispensa();
+        }
+    }
 
-// Funzione per aggiornare i menu settimanali con gli ingredienti disponibili
-function aggiornaMenu() {
-    const selectElements = document.querySelectorAll('.ingrediente');
-    selectElements.forEach(select => {
-        select.innerHTML = ''; // Pulisce le opzioni
-        dispensa.forEach(articolo => {
-            const option = document.createElement('option');
-            option.value = articolo.nome;
-            option.textContent = `${articolo.nome} (${articolo.unita})`;
-            select.appendChild(option);
+    async function aggiungiRicetta() {
+        const nome = document.getElementById('nomeRicetta').value;
+        if (nome) {
+            try {
+                await addDoc(collection(db, "ricette"), {
+                    nome, ingredienti
+                });
+                mostraFeedback("Ricetta aggiunta con successo!", "success");
+                caricaRicette();
+            } catch (error) {
+                mostraFeedback("Errore nell'inserimento della ricetta", "error");
+            }
+        } else {
+            mostraFeedback("Errore: il nome della ricetta non può essere vuoto", "error");
+        }
+    }
+
+    function aggiornaDispensa() {
+        const tabella = document.getElementById('tabellaDispensa').getElementsByTagName('tbody')[0];
+        tabella.innerHTML = '';
+        dispensa.forEach(ing => {
+            const row = tabella.insertRow();
+            row.innerHTML = `<td>${ing.nome}</td><td>${ing.quantita}</td><td>${ing.unita}</td>`;
         });
-    });
-}
+        aggiornaMenu();
+    }
 
+    function aggiornaMenu() {
+        document.querySelectorAll('.menu').forEach(select => {
+            select.innerHTML = '<option value="">Scegli una ricetta...</option>' + ricette.map(ric => `<option value="${ric.nome}">${ric.nome}</option>`).join('');
+        });
+    }
+
+    function mostraFeedback(message, type) {
+        const feedbackElement = type === "success" ? document.getElementById('ricetteFeedback') : document.getElementById('dispensaFeedback');
+        feedbackElement.textContent = message;
+        feedbackElement.style.display = "block";
+        setTimeout(() => feedbackElement.style.display = "none", 3000);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        caricaDispensa();
+        caricaRicette();
+    });
 </script>
+
 
 </body>
 </html>
